@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+import requests
+from getpass import getuser
+from json import loads
+from shutil import copyfile
+from sys import exit
+
+# Global variables like bing wallpaper urls
+bing_url = "http://www.bing.com"
+bing_wallpaper_url = "http://www.bing.com/HPImageArchive.aspx?format=js&n=1"
+bing_wallpaper_ext = "_1366x768.jpg"
+wallpaper_path = "/home/" + getuser() + "/Pictures/"
+image_path = wallpaper_path + "Bing Wallpapers/"
+
+def main():
+    '''
+    Parse some JSON and download the bing wallpaper of the day
+    should work as long as bing serves JSON detailing the wallpaper of the day
+    '''
+    try:
+        r = requests.get(bing_wallpaper_url)
+    except requests.exceptions.RequestException as e:
+        print("Internet connection failed...")
+        exit(1)
+    wallpaper_json = loads(r.text)
+    base_url = wallpaper_json['images'][0]['urlbase']
+    base_name = wallpaper_json['images'][0]['startdate']
+    image_url = bing_url + base_url + bing_wallpaper_ext
+    # Download the image
+    r = requests.get(image_url, stream=True)
+    if r.status_code == 200:
+        with open(image_path + base_name + ".jpg", 'wb') as f:
+            for chunk in r:
+                f.write(chunk)
+    copyfile(image_path + base_name + ".jpg", wallpaper_path + "1.jpg")
+
+if __name__ == '__main__':
+    main()
