@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+import requests
+from getpass import getuser
+from json import loads
+from shutil import copyfile
+from sys import exit
+from os import listdir
+from random import choice
+
+# Global variables like bing wallpaper urls
+wallpaper_path = "/home/" + getuser() + "/Pictures/"
+image_path = wallpaper_path + "Bing Wallpapers/"
+
+def main():
+    '''
+    Read a directory, randomly pick one of them, move it to 1.jpg
+    '''
+    try:
+        pictures = listdir(image_path)
+    except:
+        print("Directory does not exist...")
+        exit(1)
+    random_image = choice(pictures)
+    copyfile(image_path + random_image, wallpaper_path + "1.jpg")
+    print("Wallpaper is now: " + random_image)
+
+if __name__ == '__main__':
+    main()
